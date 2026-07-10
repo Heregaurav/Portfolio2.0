@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { Rocket, FileText, Radio, ChevronDown } from 'lucide-react';
 
 const ROLES = [
-  'Full Stack Developer',
+  'Web Developer',
   'Cybersecurity Enthusiast',
+  'Cloud Eplorer',
   'ECE Engineer',
-  'Cloud Explorer',
   'Team Leader',
 ];
 
@@ -76,6 +77,7 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
   const buttonsRef = useRef();
   const statsRef = useRef();
   const telemetryRef = useRef();
+  const scrollCueRef = useRef();
 
   useEffect(() => {
     const tl = gsap.timeline();
@@ -102,18 +104,38 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
     .fromTo(telemetryRef.current,
       { opacity: 0, x: -15 },
       { opacity: 1, x: 0, duration: 0.6, ease: 'power2.out' }, '-=0.5'
+    )
+    .fromTo(scrollCueRef.current,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.8, ease: 'power2.out' }, '-=0.3'
     );
+
+    // Gentle infinite bob on the scroll cue, started after the intro settles.
+    const bob = gsap.to(scrollCueRef.current, {
+      y: 8,
+      duration: 1.1,
+      ease: 'sine.inOut',
+      repeat: -1,
+      yoyo: true,
+      delay: 1.6,
+    });
+
+    return () => bob.kill();
   }, []);
 
   const stats = [
     { label: 'Projects', value: '15+' },
-    { label: 'Hackathons', value: '8' },
-    { label: 'CTFs', value: '12' },
-    { label: 'GPA', value: '8.7' },
+    { label: 'Tryhackme', value: 'Top5%' },
+    { label: 'DSA', value: '1000+' },
+    { label: 'GPA', value: '8.5' },
   ];
 
+  const handleScrollCue = () => {
+    document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
-    <div ref={containerRef} style={{
+    <div ref={containerRef} className="landing-ui-container" style={{
       position: 'absolute', inset: 0,
       display: 'flex',
       alignItems: 'center',
@@ -128,53 +150,78 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
         @media (max-width: 990px) {
           .system-status-panel { display: none !important; }
           .bottom-status-bar { font-size: 8px !important; width: 90% !important; text-align: center; }
+          .landing-ui-container { align-items: flex-start !important; padding-top: 32px !important; }
+          .landing-content-panel { margin-left: 16px !important; max-width: calc(100vw - 32px) !important; width: auto !important; }
+          .landing-title-block { margin-top: 0 !important; }
+          .landing-main-title, .landing-title-outline { text-align: left !important; margin-left: 0 !important; }
+          .landing-subtitle { margin-bottom: 24px !important; }
+          .landing-stat-wrap { gap: 10px !important; margin-bottom: 22px !important; }
+          .landing-stat-card { min-width: 60px !important; padding: 10px 12px !important; }
+          .landing-stat-value { font-size: 18px !important; }
+          .landing-stat-label { font-size: 8px !important; letter-spacing: 0.8px !important; }
+          .landing-buttons { gap: 12px !important; margin-top: 42px !important; margin-bottom: 90px !important; justify-content: center !important; }
+          .landing-cta-button { padding: 12px 18px !important; font-size: 12px !important; max-width: 300px !important; }
+        }
+        @media (max-width: 640px) {
+          .landing-content-panel { margin-left: 8px !important; max-width: calc(100vw - 16px) !important; width: auto !important; }
+          .landing-cta-button { width: auto !important; min-width: 180px !important; max-width: 240px !important; }
+          .landing-main-title { font-size: clamp(24px, 10vw, 34px) !important; }
+          .landing-title-outline { font-size: clamp(28px, 10vw, 38px) !important; }
+          .landing-stat-wrap { margin-bottom: 12px !important; justify-content: flex-start !important; gap: 5px !important; }
+          .landing-stat-card { min-width: 48px !important; padding: 6px 8px !important; flex: 0 0 auto !important; }
+          .landing-stat-value { font-size: 13px !important; }
+          .landing-stat-label { font-size: 6px !important; }
+          .landing-buttons {
+            position: static !important;
+            width: auto !important;
+            max-width: 240px !important;
+            margin-top: 12px !important;
+            margin-bottom: 20px !important;
+            gap: 8px !important;
+            align-items: flex-start !important;
+            justify-content: flex-start !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            transform: none !important;
+          }
+          .landing-buttons > button { width: auto !important; }
+          .secondary-action-row { display: none !important; }
+          .landing-cta-button { padding: 7px 10px !important; font-size: 10px !important; border-radius: 10px !important; }
         }
       `}</style>
 
       <HexGrid />
 
+      {/* Top-right status HUD */}
+
+
       {/* Left Interface Content Panel */}
-      <div style={{
+      <div className="landing-content-panel" style={{
         marginLeft: 'clamp(24px, 7vw, 90px)',
-        /* 💡 TUNED WIDTH: Frames the avatar on the left instead of overlapping him */
-        maxWidth: '460px', 
+        maxWidth: '460px',
         pointerEvents: 'all',
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative',
       }}>
-        
-        {/* 💡 RELOCATED TELEMETRY HUD: Now sits neatly above the headline on the left side */}
-        <div ref={telemetryRef} className="system-status-panel" style={{
-          fontFamily: 'var(--font-mono, monospace)',
-          fontSize: '10px',
-          letterSpacing: '1px',
-          color: 'rgba(0,212,255,0.45)',
-          lineHeight: 1.8,
-          marginBottom: '30px',
-          borderLeft: '2px solid rgba(0,212,255,0.2)',
-          paddingLeft: '14px'
-        }}>
-          <div>SYS.STATUS: <span style={{ color: 'var(--neon-green, #39ff14)', textShadow: '0 0 8px rgba(57,255,20,0.4)' }}>ONLINE</span></div>
-          <div>LOCATION: INDIA • ECE DEPT</div>
-          <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
-            {['REACT', 'NODE', 'AWS', 'CYBER'].map((t, i) => (
-              <span key={i} style={{
-                padding: '1px 6px',
-                border: '1px solid rgba(0,212,255,0.15)',
-                borderRadius: '3px',
-                background: 'rgba(0,212,255,0.02)',
-                color: 'rgba(0,212,255,0.5)',
-                fontSize: '8px'
-              }}>{t}</span>
-            ))}
-          </div>
-        </div>
+
+        {/* localized vignette behind the content to improve text readability without heavy boxes */}
+        <div aria-hidden style={{
+          position: 'absolute',
+          left: '-6vw',
+          top: '-6vh',
+          width: '120%',
+          height: '120%',
+          pointerEvents: 'none',
+          background: 'radial-gradient(ellipse at 18% 20%, rgba(0,0,0,0.26) 0%, rgba(0,0,0,0.08) 35%, rgba(0,0,0,0) 60%)',
+          filter: 'blur(18px) saturate(0.95)'
+        }} />
 
         {/* Subtitle Mission Badge */}
         <div style={{
           fontFamily: 'var(--font-mono, monospace)',
           fontSize: '11px',
-          color: 'var(--neon-blue, #00d4ff)',
+          color: 'var(--neon-blue, #ffffff)',
           letterSpacing: '4px',
           marginBottom: '18px',
           opacity: 0.85,
@@ -183,34 +230,37 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
           gap: '10px',
         }}>
           <span style={{ display: 'inline-block', width: '30px', height: '1px', background: 'var(--neon-blue, #00d4ff)' }} />
-          MISSION BRIEFING: PORTFOLIO v2.0
+            NEVER GIVE UP 
         </div>
 
         {/* Cinematic Header Text Block */}
-        <div ref={titleRef} style={{ opacity: 0 }}>
-          <h1 style={{
+        <div ref={titleRef} className="landing-title-block" style={{ opacity: 0 }}>
+          <h1 className="landing-main-title" style={{
             fontFamily: 'var(--font-display, sans-serif)',
-            fontSize: 'clamp(42px, 5.5vw, 68px)',
+            fontSize: 'clamp(32px, 5.5vw, 50px)',
             fontWeight: 900,
             lineHeight: 0.95,
             letterSpacing: '-1.5px',
             marginBottom: '4px',
-            color: '#ffffff'
+            color: '#ffffff',
+            textShadow: '0 6px 22px rgba(0,0,0,0.55)',
+            textAlign: 'left',
           }}>
-            GAURAV
+            GAURAV 
           </h1>
-          <h1 style={{
+          <h1 className="landing-title-outline" style={{
             fontFamily: 'var(--font-display, sans-serif)',
-            fontSize: 'clamp(42px, 5.5vw, 68px)',
+            fontSize: 'clamp(42px, 5.5vw, 48px)',
             fontWeight: 900,
             lineHeight: 0.95,
             letterSpacing: '-1.5px',
             marginBottom: '24px',
             WebkitTextStroke: '1.5px rgba(0,212,255,0.8)',
             color: 'transparent',
-            textShadow: '0 0 20px rgba(0,212,255,0.15)'
+            textShadow: '0 8px 30px rgba(0,0,0,0.55)',
+            textAlign: 'left',
           }}>
-            KUMAR
+            CHANDRAVANSHI
           </h1>
         </div>
 
@@ -226,33 +276,33 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
         </div>
 
         {/* Core Operational Statistics Matrix */}
-        <div ref={statsRef} style={{
+        <div ref={statsRef} className="landing-stat-wrap" style={{
           display: 'flex',
-          gap: '12px',
+          gap: '10px',
           marginBottom: '44px',
           flexWrap: 'wrap',
         }}>
           {stats.map((s, i) => (
-            <div key={i} style={{
-              padding: '12px 16px',
+            <div key={i} className="landing-stat-card" style={{
+              padding: '12px 14px',
               background: 'rgba(0,212,255,0.03)',
               border: '1px solid rgba(0,212,255,0.14)',
               borderRadius: '8px',
               textAlign: 'center',
               backdropFilter: 'blur(4px)',
-              flex: '1 1 80px',
-              minWidth: '80px',
+              flex: '1 1 72px',
+              minWidth: '72px',
               opacity: 0,
               boxShadow: 'inset 0 0 10px rgba(0,212,255,0.01)'
             }}>
-              <div style={{
+              <div className="landing-stat-value" style={{
                 fontFamily: 'var(--font-display, sans-serif)',
-                fontSize: '22px',
+                fontSize: '20px',
                 color: 'var(--neon-blue, #00d4ff)',
                 fontWeight: 800,
                 textShadow: '0 0 12px rgba(0,212,255,0.5)',
               }}>{s.value}</div>
-              <div style={{
+              <div className="landing-stat-label" style={{
                 fontFamily: 'var(--font-mono, monospace)',
                 fontSize: '9px',
                 letterSpacing: '1px',
@@ -264,59 +314,61 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
           ))}
         </div>
 
-        {/* Action Controls Matrix */}
-        <div ref={buttonsRef} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        {/* Action Controls Matrix (LAUNCH moved to top-right to avoid overlap) */}
+        <div ref={buttonsRef} className="landing-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <button
+            className="landing-cta-button"
             onClick={onLaunch}
             style={{
               fontFamily: 'var(--font-display, sans-serif)',
               fontSize: '13px',
-              letterSpacing: '3px',
-              padding: '18px 36px',
-              background: 'linear-gradient(135deg, rgba(0,212,255,0.2), rgba(180,79,255,0.15))',
-              border: '1px solid rgba(0,212,255,0.5)',
-              borderRadius: '6px',
+              letterSpacing: '2px',
+              padding: '16px 24px',
+              background: 'linear-gradient(135deg, rgba(0,212,255,0.22), rgba(180,79,255,0.18))',
+              border: '1px solid rgba(0,212,255,0.4)',
+              borderRadius: '14px',
               color: '#ffffff',
               cursor: 'pointer',
-              position: 'relative',
-              overflow: 'hidden',
               opacity: 0,
-              fontWeight: 700,
-              transition: 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
-              width: 'fit-content',
+              transition: 'all 0.25s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              boxShadow: '0 18px 40px rgba(0,0,0,0.28), 0 0 18px rgba(0,212,255,0.1)',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = 'linear-gradient(135deg, rgba(0,212,255,0.35), rgba(180,79,255,0.3))';
-              e.currentTarget.style.borderColor = 'rgba(0,212,255,0.9)';
-              e.currentTarget.style.boxShadow = '0 0 35px rgba(0,212,255,0.45), inset 0 0 15px rgba(0,212,255,0.2)';
-              e.currentTarget.style.transform = 'translateX(6px)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 22px 48px rgba(0,0,0,0.3), 0 0 28px rgba(0,212,255,0.15)';
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = 'linear-gradient(135deg, rgba(0,212,255,0.2), rgba(180,79,255,0.15))';
-              e.currentTarget.style.borderColor = 'rgba(0,212,255,0.5)';
-              e.currentTarget.style.boxShadow = 'none';
-              e.currentTarget.style.transform = 'translateX(0)';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 18px 40px rgba(0,0,0,0.28), 0 0 18px rgba(0,212,255,0.1)';
             }}
           >
-            <span style={{ marginRight: '12px' }}>🚀</span>
-            LAUNCH JOURNEY
+            <Rocket size={16} strokeWidth={2} /> BETA
           </button>
 
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div className="secondary-action-row" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <button
               onClick={onResume}
               style={{
                 fontFamily: 'var(--font-mono, monospace)',
                 fontSize: '11px',
                 letterSpacing: '2px',
-                padding: '12px 26px',
-                background: 'rgba(255,255,255,0.02)',
+                padding: '12px 24px',
+                background: 'rgba(255,255,255,0.03)',
                 border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: '4px',
-                color: 'rgba(255,255,255,0.65)',
+                borderRadius: '10px',
+                color: 'rgba(255,255,255,0.78)',
                 cursor: 'pointer',
                 opacity: 0,
                 transition: 'all 0.25s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                flex: '1 1 160px',
+                minWidth: '152px',
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.borderColor = 'rgba(255,255,255,0.45)';
@@ -325,11 +377,11 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
-                e.currentTarget.style.color = 'rgba(255,255,255,0.65)';
-                e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+                e.currentTarget.style.color = 'rgba(255,255,255,0.78)';
+                e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
               }}
             >
-              📄 RESUME
+              <FileText size={13} strokeWidth={2} /> RESUME
             </button>
             <button
               onClick={onContact}
@@ -337,14 +389,19 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
                 fontFamily: 'var(--font-mono, monospace)',
                 fontSize: '11px',
                 letterSpacing: '2px',
-                padding: '12px 26px',
-                background: 'rgba(255,255,255,0.02)',
+                padding: '12px 24px',
+                background: 'rgba(255,255,255,0.03)',
                 border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: '4px',
-                color: 'rgba(255,255,255,0.65)',
+                borderRadius: '10px',
+                color: 'rgba(255,255,255,0.78)',
                 cursor: 'pointer',
                 opacity: 0,
                 transition: 'all 0.25s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                flex: '1 1 140px',
+                minWidth: '140px',
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.borderColor = 'rgba(180,79,255,0.6)';
@@ -354,12 +411,12 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
-                e.currentTarget.style.color = 'rgba(255,255,255,0.65)';
-                e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+                e.currentTarget.style.color = 'rgba(255,255,255,0.78)';
+                e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
                 e.currentTarget.style.boxShadow = 'none';
               }}
             >
-              📡 CONTACT
+              <Radio size={13} strokeWidth={2} /> CONTACT
             </button>
           </div>
         </div>
@@ -396,6 +453,39 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
         </div>
       </div>
 
+      {/* Scroll cue — ties the hero to the sections now living below it */}
+      <button
+        ref={scrollCueRef}
+        onClick={handleScrollCue}
+        aria-label="Scroll to explore"
+        style={{
+          position: 'absolute',
+          bottom: '64px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '6px',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          pointerEvents: 'all',
+          opacity: 0,
+          padding: '6px',
+        }}
+      >
+        <span style={{
+          fontFamily: 'var(--font-mono, monospace)',
+          fontSize: '9px',
+          letterSpacing: '3px',
+          color: 'rgba(255,255,255,0.4)',
+        }}>
+          SCROLL TO EXPLORE
+        </span>
+        <ChevronDown size={18} color="var(--neon-blue, #00d4ff)" strokeWidth={1.75} />
+      </button>
+
       {/* Bottom Global Frame Status Ticker */}
       <div className="bottom-status-bar" style={{
         position: 'absolute',
@@ -405,15 +495,12 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
         fontFamily: 'var(--font-mono, monospace)',
         fontSize: '10px',
         letterSpacing: '3px',
-        color: 'rgba(255,255,255,0.25)',
+        color: 'rgba(255,255,255,0.28)',
         display: 'flex',
         alignItems: 'center',
         gap: '16px',
         whiteSpace: 'nowrap'
       }}>
-        <div style={{ width: '40px', height: '1px', background: 'rgba(255,255,255,0.12)' }} />
-        CLICK LAUNCH TO BEGIN YOUR JOURNEY
-        <div style={{ width: '40px', height: '1px', background: 'rgba(255,255,255,0.12)' }} />
       </div>
     </div>
   );

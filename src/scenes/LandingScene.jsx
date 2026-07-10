@@ -6,6 +6,7 @@ import StarField from '../components/effects/StarField';
 import Nebula from '../components/effects/Nebula';
 import Spaceship from '../components/spaceship/Spaceship';
 import Avatar from '../components/spaceship/Avatar';
+import Planet from '../components/planets/Planet';
 import guysittingModelUrl from '../components/spaceship/guysitting.glb?url';
 import * as THREE from 'three';
 
@@ -28,17 +29,35 @@ export default function LandingScene({ onLaunch }) {
   const [phase, setPhase] = useState('idle'); 
 
   const shipY = useRef(-0.5);
-  
   /* 💡 FIXED: Balanced at -0.8 to perfectly frame the left-aligned avatar and right-aligned ship */
-  const targetX = useRef(-0.8); 
+  const targetX = useRef(-0.8);
+
+  // scroll-driven camera mapping refs and safe bounds
+  const baseCam = useRef(new THREE.Vector3(0, 1.5, 10));
+  const baseFov = useRef(60);
+  const scrollY = useRef(0);
+  const SCROLL_MAX_DOWN = 12; // reduced travel to stay inside nebula
+  const SCROLL_MAX_BACK = 8;  // reduce z translation
+  const SCROLL_MAX_X = 0.6;   // lateral shift limit
+  const FOV_DELTA = 6;        // subtle FOV widening on scroll
 
   useEffect(() => {
+    // initial cinematic camera position — slightly tighter FOV to avoid edges
     camera.position.set(4, 2, 13);
+    camera.fov = baseFov.current;
+    camera.updateProjectionMatrix();
     camera.lookAt(targetX.current, 0, 0);
     gsap.to(camera.position, {
       x: 1.5, y: 1.0, z: 10.5,
       duration: 3.2, ease: 'power2.inOut',
     });
+
+    // record base camera and set listener
+    baseCam.current = camera.position.clone();
+    baseFov.current = camera.fov || 60;
+    const onScroll = () => { scrollY.current = window.scrollY || window.pageYOffset; };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   // ── Phase sequencer ──────────────────────────────────────────────────
@@ -96,6 +115,28 @@ export default function LandingScene({ onLaunch }) {
   };
 
   useFrame(() => {
+    // map page scroll into camera movement only while idle (normal browsing)
+    if (phase === 'idle' && baseCam.current) {
+      const docH = Math.max(1, document.body.scrollHeight - window.innerHeight);
+      const t = Math.min(1, (scrollY.current || 0) / docH);
+
+      // compute clamped desired camera within safe bounds
+      const desired = new THREE.Vector3().copy(baseCam.current);
+      const dy = t * SCROLL_MAX_DOWN;
+      const dz = t * SCROLL_MAX_BACK;
+      const dx = t * SCROLL_MAX_X;
+      desired.y = THREE.MathUtils.clamp(baseCam.current.y - dy, baseCam.current.y - SCROLL_MAX_DOWN, baseCam.current.y + 2);
+      desired.z = THREE.MathUtils.clamp(baseCam.current.z + dz, baseCam.current.z, baseCam.current.z + SCROLL_MAX_BACK);
+      desired.x = THREE.MathUtils.clamp(baseCam.current.x + dx, baseCam.current.x - 1, baseCam.current.x + SCROLL_MAX_X);
+
+      // smooth interpolate camera position
+      camera.position.lerp(desired, 0.08);
+
+      // gently widen FOV as we move to keep scene framed and avoid edges
+      const targetFov = THREE.MathUtils.clamp(baseFov.current + t * FOV_DELTA, baseFov.current, baseFov.current + FOV_DELTA);
+      camera.fov += (targetFov - camera.fov) * 0.06;
+      camera.updateProjectionMatrix();
+    }
     const target = new THREE.Vector3(targetX.current, shipY.current, 0);
     camera.lookAt(target);
 
@@ -111,6 +152,10 @@ export default function LandingScene({ onLaunch }) {
       <StarField count={6200} />
       <Nebula />
       <FloatingDebris />
+        {/* a large planet continuation that exists below the hero so the About
+          content scrolls 'through' the same world instead of starting on a
+          separate plane */}
+        <Planet type="cloud" orbitRadius={0} orbitAngle={0} orbitY={-28} orbitSpeed={0} index={0} scale={7} />
 
       {/* ── LIGHTING ── */}
       <ambientLight intensity={0.35} color="#cce0ff" />
