@@ -1,6 +1,8 @@
+import { useRef } from 'react';
 import { Briefcase } from 'lucide-react';
 import SectionWrapper from './SectionWrapper';
 import { COLORS, FONT, glassPanel } from './theme';
+import TimelineScrollProgress, { TimelineScrollProgressStyles } from './TimelineScrollProgress';
 
 const TIMELINE = [
   {
@@ -27,6 +29,11 @@ const TIMELINE = [
 ];
 
 export default function ExperienceSection() {
+  const containerRef = useRef(null);
+  // One ref per timeline row, created up front so the array identity is
+  // stable across renders (avoids re-creating refs / re-running effects).
+  const itemRefs = useRef(TIMELINE.map(() => ({ current: null }))).current;
+
   return (
     <SectionWrapper
       id="experience"
@@ -35,25 +42,22 @@ export default function ExperienceSection() {
       title="Experience"
       description="A real chronological path — school, teams, and shipped work."
     >
-      <div style={{ position: 'relative', maxWidth: '720px' }}>
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            left: '19px',
-            top: '10px',
-            bottom: '10px',
-            width: '1px',
-            background: `linear-gradient(180deg, ${COLORS.neonBlue}55, transparent)`,
-          }}
-        />
+      <TimelineScrollProgressStyles />
+      <div ref={containerRef} style={{ position: 'relative', maxWidth: '720px' }}>
+        {/* Glowy scroll progress rail (replaces the old static base line —
+            having both caused two nearly-overlapping lines to visually merge) */}
+        <TimelineScrollProgress containerRef={containerRef} itemRefs={itemRefs} />
+
         {TIMELINE.map((item, i) => (
           <div
             key={item.title}
+            ref={itemRefs[i]}
             data-reveal
+            className="exp-row"
             style={{ display: 'flex', gap: '22px', marginBottom: i === TIMELINE.length - 1 ? 0 : '32px' }}
           >
             <div
+              className="exp-dot"
               style={{
                 flexShrink: 0,
                 width: 40,
@@ -69,7 +73,7 @@ export default function ExperienceSection() {
             >
               <Briefcase size={16} color={COLORS.neonBlue} strokeWidth={1.75} />
             </div>
-            <div style={{ ...glassPanel, padding: '18px 22px', flexGrow: 1 }}>
+            <div className="exp-panel" style={{ ...glassPanel, padding: '18px 22px', flexGrow: 1 }}>
               <div
                 style={{
                   fontFamily: FONT.mono,
