@@ -247,7 +247,7 @@ export default function PlanetPanel({ planetIndex, onClose }) {
   };
 
   return (
-    <div ref={panelRef} style={{
+    <div ref={panelRef} className="planet-panel" style={{
       position: 'fixed',
       right: '26px',
       top: '50%',
@@ -291,7 +291,7 @@ export default function PlanetPanel({ planetIndex, onClose }) {
             {data.title}
           </h2>
         </div>
-        <button onClick={handleClose} style={{
+        <button className="planet-panel-close" onClick={handleClose} style={{
           background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
           borderRadius: '16px', color: 'rgba(255,255,255,0.65)',
           width: '36px', height: '36px', cursor: 'none',

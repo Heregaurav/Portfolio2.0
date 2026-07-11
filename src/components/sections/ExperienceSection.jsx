@@ -38,20 +38,6 @@ const EDUCATION = [
     description:
       " Learnt cybersecurity SOC "
   },
-  {
-    period: '2022 — 2024',
-    title: 'Class XI — XII, PCM',
-    org: 'Your Senior Secondary School',
-    description:
-      'Higher secondary schooling with Physics, Chemistry, and Mathematics — the foundation for engineering entrance exams.',
-  },
-  {
-    period: '2010 — 2022',
-    title: 'Primary & Secondary Schooling',
-    org: 'Your School Name',
-    description:
-      'Foundational schooling through Class X, building the base for later technical study.',
-  },
 ];
 
 function Timeline({ items, icon: Icon, dotClass, containerRef, itemRefs }) {
