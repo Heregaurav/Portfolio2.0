@@ -308,7 +308,7 @@ export default function App() {
           <>
             {/* HUD top bar */}
             {/* HUD top bar — redesigned as a lightweight cockpit HUD */}
-            <div style={{
+            <div className="space-hud-topbar" style={{
               position: 'absolute',
               top: '18px',
               left: '50%',
@@ -385,6 +385,7 @@ export default function App() {
             )}
             {/* Contact button */}
             <button
+              className="space-contact-button"
               onClick={handleContact}
               style={{
                 position: 'absolute',

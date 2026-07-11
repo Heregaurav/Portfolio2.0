@@ -124,6 +124,7 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
   }, []);
 
   const stats = [
+
     { label: 'Tryhackme', value: 'Top5%' },
     { label: 'DSA', value: '800+' },
     { label: 'GPA', value: '8.5' },
@@ -236,7 +237,7 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
         <div ref={titleRef} className="landing-title-block" style={{ opacity: 0 }}>
           <h1 className="landing-main-title" style={{
             fontFamily: 'var(--font-display, sans-serif)',
-            fontSize: 'clamp(32px, 5.5vw, 50px)',
+            fontSize: 'clamp(32px, 5.5vw, 40px)',
             fontWeight: 900,
             lineHeight: 0.95,
             letterSpacing: '-1.5px',
@@ -245,11 +246,11 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
             textShadow: '0 6px 22px rgba(0,0,0,0.55)',
             textAlign: 'left',
           }}>
-            GAURAV 
+            GAURAV KUMAR
           </h1>
           <h1 className="landing-title-outline" style={{
             fontFamily: 'var(--font-display, sans-serif)',
-            fontSize: 'clamp(42px, 5.5vw, 48px)',
+            fontSize: 'clamp(42px, 5.5vw, 38px)',
             fontWeight: 900,
             lineHeight: 0.95,
             letterSpacing: '-1.5px',

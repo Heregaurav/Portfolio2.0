@@ -156,6 +156,7 @@ function Heatmap({ data = [] }) {
             key={stat.label}
             style={{
               flex: '1 1 130px',
+              minWidth: 0,
               padding: '10px 14px',
               borderRadius: '12px',
               background: 'rgba(255,255,255,0.03)',
@@ -172,57 +173,114 @@ function Heatmap({ data = [] }) {
         ))}
       </div>
 
-      <div style={{ display: 'flex', gap: '58px', overflowX: 'auto', paddingBottom: '18px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: `${gap}px`, paddingTop: '12px', flexShrink: 0, minWidth: '56px' }}>
-          {dayLabels.map((label, i) => (
-            <div
-              key={i}
-              style={{ height: `${cell}px`, lineHeight: `${cell}px`, fontFamily: FONT.mono, fontSize: '9px', color: COLORS.textFaint }}
-            >
-              {label}
-            </div>
-          ))}
-        </div>
 
-        <div style={{ flexShrink: 0 }}>
-          <div style={{ position: 'relative', height: '16px', marginBottom: '4px', width: `${weeks.length * (cell + gap)}px` }}>
-            {monthLabels.map((m) => (
-              <span
-                key={`${m.label}-${m.index}`}
-                style={{
-                  position: 'absolute',
-                  left: `${m.index * (cell + gap)}px`,
-                  fontFamily: FONT.mono,
-                  fontSize: '10px',
-                  color: COLORS.textFaint,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px',
-                }}
-              >
-                {m.label}
-              </span>
-            ))}
-          </div>
-          <div style={{ display: 'flex', gap: `${gap}px` }}>
-            {weeks.map((week, wi) => (
-              <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: `${gap}px` }}>
-                {week.map((day) => (
-                  <div
-                    key={day.date}
-                    title={day.inRange ? `${day.count} activity on ${day.date}` : ''}
-                    style={{
-                      width: `${cell}px`,
-                      height: `${cell}px`,
-                      borderRadius: '3px',
-                      background: day.inRange ? colorFor(day.count) : 'transparent',
-                    }}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
+      <div
+  style={{
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '16px',
+    width: '100%',
+    overflowX: 'auto',
+    paddingBottom: '18px',
+  }}
+>
+  {/* Day Labels */}
+  <div
+    style={{
+      width: '56px',
+      flexShrink: 0,
+      paddingTop: '20px', // aligns with month labels
+      display: 'flex',
+      flexDirection: 'column',
+      gap: `${gap}px`,
+    }}
+  >
+    {dayLabels.map((label, i) => (
+      <div
+        key={i}
+        style={{
+          height: `${cell}px`,
+          display: 'flex',
+          alignItems: 'center',
+          fontFamily: FONT.mono,
+          fontSize: '9px',
+          color: COLORS.textFaint,
+        }}
+      >
+        {label}
       </div>
+    ))}
+  </div>
+
+  {/* Heatmap */}
+  <div
+    style={{
+      flex: 1,
+      overflowX: 'auto',
+    }}
+  >
+      {/* Month Labels */}
+      <div
+        style={{
+          position: 'relative',
+          height: '16px',
+          marginBottom: '6px',
+          width: `${weeks.length * (cell + gap)}px`,
+        }}
+      >
+        {monthLabels.map((m) => (
+          <span
+            key={`${m.label}-${m.index}`}
+            style={{
+              position: 'absolute',
+              left: `${m.index * (cell + gap)}px`,
+              fontFamily: FONT.mono,
+              fontSize: '10px',
+              color: COLORS.textFaint,
+              textTransform: 'uppercase',
+            }}
+          >
+            {m.label}
+          </span>
+        ))}
+      </div>
+
+      {/* Calendar */}
+      <div
+        style={{
+          display: 'flex',
+          gap: `${gap}px`,
+          width: `${weeks.length * (cell + gap)}px`,
+        }}
+      >
+        {weeks.map((week, wi) => (
+          <div
+            key={wi}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: `${gap}px`,
+            }}
+          >
+            {week.map((day) => (
+              <div
+                key={day.date}
+                title={day.inRange ? `${day.count} activity on ${day.date}` : ''}
+                style={{
+                  width: `${cell}px`,
+                  height: `${cell}px`,
+                  borderRadius: '3px',
+                  background: day.inRange
+                    ? colorFor(day.count)
+                    : 'transparent',
+                }}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+  </div>
+</div>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px', marginTop: '14px', color: COLORS.textFaint, fontFamily: FONT.mono, fontSize: '10px', letterSpacing: '1.2px', textTransform: 'uppercase' }}>
         <span>Less</span>
@@ -358,11 +416,15 @@ export default function CodingProfileSection() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+  const rawApiBase = import.meta.env.VITE_API_BASE_URL || '';
+  const API_BASE = rawApiBase.replace(/\/+$/, '');
+  const API_PROFILE_URL = API_BASE.endsWith('/api/profile')
+    ? API_BASE
+    : `${API_BASE}/api/profile`;
 
   async function loadProfile({ refresh = false } = {}) {
     try {
-      const url = `${API_BASE}/api/profile${refresh ? '?refresh=true' : ''}`;
+      const url = `${API_PROFILE_URL}${refresh ? '?refresh=true' : ''}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error('Profile endpoint unavailable');
       const data = await response.json();
@@ -476,8 +538,229 @@ export default function CodingProfileSection() {
       title="Coding profiles"
       description=" Problem-solving stats accross different Platforms : LeetCode, CodeChef and GeeksforGeeks as well as  GitHub."
     >
-      <div style={{ display: 'grid', gap: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+      <style>{`
+        .coding-profile-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 24px;
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
+        }
+
+        .coding-profile-grid > * {
+          width: 100%;
+          min-width: 0;
+        }
+
+        .coding-profile-actions {
+          justify-content: flex-end;
+        }
+
+        .coding-summary-grid {
+          display: grid;
+          gap: 14px;
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          margin-top: 22px;
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+        }
+
+        .coding-hero-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+          flex-wrap: wrap;
+          gap: 12px;
+          min-width: 0;
+          width: 100%;
+        }
+
+        .coding-platform-grid {
+          display: grid;
+          gap: 12px;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+        }
+
+        .coding-platform-grid > a {
+          display: block;
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+        }
+
+        .coding-platform-info-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+          flex-wrap: wrap;
+          width: 100%;
+          min-width: 0;
+        }
+
+        .coding-platform-meta {
+          min-width: 0;
+          flex: 1 1 180px;
+        }
+
+        .coding-platform-stats {
+          min-width: 0;
+          flex: 0 0 auto;
+          text-align: right;
+        }
+
+        .coding-details-grid {
+          display: grid;
+          gap: 8px;
+          grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+          margin-top: 12px;
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+        }
+
+        .coding-overall-grid {
+          display: grid;
+          gap: 24px;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+        }
+
+        .coding-profile-root {
+          width: 100% !important;
+          max-width: 100% !important;
+          overflow-x: hidden !important;
+          box-sizing: border-box !important;
+        }
+
+        .coding-profile-grid,
+        .coding-summary-grid,
+        .coding-platform-grid,
+        .coding-overall-grid,
+        .coding-details-grid {
+          max-width: 100% !important;
+          box-sizing: border-box !important;
+          min-width: 0 !important;
+          justify-items: stretch !important;
+          align-items: stretch !important;
+        }
+
+        .coding-profile-grid * {
+          box-sizing: border-box !important;
+          min-width: 0 !important;
+        }
+
+        .coding-summary-grid > div,
+        .coding-platform-grid > a,
+        .coding-overall-grid > div {
+          min-width: 0;
+          max-width: 100%;
+          width: 100%;
+        }
+
+        .coding-platform-info-row > div {
+          min-width: 0;
+          width: 100%;
+        }
+
+        .coding-heatmap-panel {
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+        }
+
+        @media (max-width: 1120px) {
+          .coding-profile-actions {
+            justify-content: center !important;
+          }
+
+          .coding-summary-grid,
+          .coding-platform-grid,
+          .coding-overall-grid,
+          .coding-details-grid {
+            grid-template-columns: 1fr !important;
+            width: 100% !important;
+          }
+
+          .coding-hero-row {
+            justify-content: flex-start;
+          }
+
+          .coding-platform-stats {
+            text-align: left;
+            width: 100% !important;
+          }
+
+          .coding-platform-info-row {
+            flex-direction: column;
+            align-items: stretch;
+          }
+
+          .coding-platform-meta,
+          .coding-platform-stats {
+            width: 100% !important;
+          }
+
+          .coding-platform-grid {
+            gap: 14px;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .coding-profile-grid {
+            gap: 18px;
+          }
+
+          .coding-summary-grid,
+          .coding-platform-grid,
+          .coding-overall-grid,
+          .coding-details-grid {
+            grid-template-columns: 1fr !important;
+            width: 100% !important;
+          }
+
+          .coding-profile-actions {
+            justify-content: center !important;
+          }
+
+          .coding-platform-info-row {
+            flex-direction: column;
+            align-items: stretch;
+          }
+
+          .coding-platform-stats {
+            text-align: left;
+          }
+
+          .coding-platform-meta,
+          .coding-platform-stats {
+            width: 100% !important;
+          }
+
+          .coding-platform-grid {
+            gap: 14px;
+          }
+
+          .coding-summary-grid {
+            gap: 12px;
+          }
+
+          .coding-overall-grid {
+            gap: 16px;
+          }
+        }
+      `}</style>
+      <div className="coding-profile-grid coding-profile-root" style={{ display: 'grid', gap: '24px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box', overflowX: 'hidden' }}>
+        <div className="coding-profile-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
           <button
             type="button"
             onClick={refreshProfile}
@@ -526,7 +809,7 @@ export default function CodingProfileSection() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px', marginTop: '22px' }}>
+          <div className="coding-summary-grid" style={{ display: 'grid', gap: '14px', marginTop: '22px' }}>
             {summaryCards.map((card) => {
               const Icon = card.icon;
               return (
@@ -542,8 +825,8 @@ export default function CodingProfileSection() {
           </div>
         </div>
 
-        <div style={{ ...glassPanel, padding: '28px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+        <div className="coding-heatmap-panel" style={{ ...glassPanel, padding: '28px' }}>
+          <div className="coding-hero-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
             <div>
               <div style={{ fontFamily: FONT.display, fontSize: '19px', fontWeight: 900, color: COLORS.textPrimary }}>Combined contribution heatmap</div>
               <div style={{ fontFamily: FONT.body, fontSize: '12px', color: COLORS.textDim, marginTop: '4px' }}>LeetCode, CodeChef and GFG activity blended into one signal, past 52 weeks.</div>
@@ -558,7 +841,7 @@ export default function CodingProfileSection() {
             <div style={{ fontFamily: FONT.mono, fontSize: '10px', color: COLORS.textFaint, textTransform: 'uppercase', letterSpacing: '1.4px' }}>Live details</div>
           </div>
 
-          <div style={{ display: 'grid', gap: '12px', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
+          <div className="coding-platform-grid" style={{ display: 'grid', gap: '12px' }}>
             {profile.platforms.map((platform) => {
               const Icon = platformIconMap[platform.platform] || Code2;
               return (
@@ -568,6 +851,7 @@ export default function CodingProfileSection() {
                   target="_blank"
                   rel="noreferrer"
                   style={{
+                    display: 'block',
                     padding: '14px 16px',
                     borderRadius: '14px',
                     background: 'rgba(255,255,255,0.03)',
@@ -577,20 +861,20 @@ export default function CodingProfileSection() {
                     transition: 'transform 0.2s ease, border-color 0.2s ease',
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div className="coding-platform-info-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <div className="coding-platform-meta" style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
                       <Icon size={16} color={platform.accent} />
                       <div>
                         <div style={{ fontFamily: FONT.display, fontSize: '15px', fontWeight: 800, color: COLORS.textPrimary }}>{platform.platform}</div>
                         <div style={{ fontFamily: FONT.mono, fontSize: '10px', letterSpacing: '1.2px', color: COLORS.textFaint, textTransform: 'uppercase' }}>{platform.statLabel}</div>
                       </div>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
+                    <div className="coding-platform-stats" style={{ textAlign: 'right' }}>
                       <div style={{ fontFamily: FONT.display, fontSize: '20px', fontWeight: 900, color: COLORS.textPrimary }}>{platform.stat}</div>
                       <div style={{ fontFamily: FONT.body, fontSize: '11px', color: COLORS.textDim }}>{platform.sub}</div>
                     </div>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(92px, 1fr))', gap: '8px', marginTop: '12px' }}>
+                  <div className="coding-details-grid" style={{ display: 'grid', gap: '8px', marginTop: '12px' }}>
                     {(platform.details || []).map((detail) => (
                       <div key={detail.label} style={{ padding: '8px 10px', borderRadius: '10px', background: 'rgba(255,255,255,0.025)', border: `1px solid ${COLORS.line}` }}>
                         <div style={{ fontFamily: FONT.mono, fontSize: '9px', letterSpacing: '1.2px', color: COLORS.textFaint, textTransform: 'uppercase', marginBottom: '4px' }}>{detail.label}</div>
@@ -604,13 +888,13 @@ export default function CodingProfileSection() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gap: '24px', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+        <div className="coding-overall-grid" style={{ display: 'grid', gap: '24px' }}>
           <div style={{ ...glassPanel, padding: '28px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
               <BarChart3 size={16} color="#00d4ff" />
               <div style={{ fontFamily: FONT.display, fontSize: '19px', fontWeight: 900, color: COLORS.textPrimary }}>Solved breakdown</div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px' }}>
+            <div style={{ display: 'grid', gap: '12px' }}>
               {breakdownEntries.map(([level, value]) => (
                 <div key={level} style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: `1px solid ${COLORS.line}` }}>
                   <div style={{ fontFamily: FONT.mono, fontSize: '10px', letterSpacing: '1.4px', color: COLORS.textFaint, textTransform: 'uppercase' }}>{level}</div>

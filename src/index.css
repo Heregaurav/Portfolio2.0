@@ -159,3 +159,124 @@ html, body {
     transform: rotate(360deg);
   }
 }
+
+/* Responsive planet and profile UI */
+.planet-nav-container {
+  width: min(960px, calc(100vw - 32px));
+}
+
+.planet-nav-grid {
+  width: 100%;
+}
+
+.planet-nav-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.planet-panel {
+  right: 26px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(420px, 92vw);
+  max-height: 88vh;
+}
+
+.space-hud-topbar {
+  min-width: 420px;
+}
+
+.space-contact-button {
+  top: 18px;
+  right: 18px;
+}
+
+@media (max-width: 840px) {
+  .planet-nav-container {
+    bottom: 18px;
+    width: min(100%, calc(100vw - 24px));
+  }
+
+  .planet-nav-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    padding: 14px;
+  }
+
+  .planet-nav-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .space-hud-topbar {
+    min-width: auto;
+    width: min(100%, calc(100vw - 24px));
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  .space-contact-button {
+    top: 12px;
+    right: 12px;
+    padding: 8px 10px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .planet-nav-container {
+    bottom: 12px;
+  }
+
+  .planet-nav-grid {
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .planet-nav-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .planet-panel {
+    position: fixed;
+    left: 50%;
+    right: auto;
+    top: auto;
+    bottom: 12px;
+    transform: translateX(-50%);
+    width: min(92vw, 420px);
+    max-height: calc(92vh);
+    padding: 20px;
+  }
+
+  .planet-panel-close {
+    width: 34px;
+    height: 34px;
+  }
+
+  .space-hud-topbar {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 14px;
+    min-width: auto;
+    font-size: 10px;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .space-contact-button {
+    top: 10px;
+    right: 10px;
+    padding: 8px 10px;
+    font-size: 10px;
+  }
+}

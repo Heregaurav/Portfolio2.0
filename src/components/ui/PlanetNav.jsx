@@ -52,7 +52,7 @@ export default function PlanetNav({ activePlanet, onSelect, onPrev, onNext, onRe
   }, []);
 
   return (
-    <div ref={containerRef} style={{
+    <div ref={containerRef} className="planet-nav-container" style={{
       position: 'absolute',
       bottom: '24px',
       left: '50%',
@@ -64,7 +64,7 @@ export default function PlanetNav({ activePlanet, onSelect, onPrev, onNext, onRe
       gap: '14px',
       width: 'min(960px, calc(100vw - 32px))',
     }}>
-      <div style={{
+      <div className="planet-nav-grid" style={{
              width: '100%',
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
@@ -169,7 +169,7 @@ export default function PlanetNav({ activePlanet, onSelect, onPrev, onNext, onRe
    
       </div>
 
-      <div style={{
+      <div className="planet-nav-controls" style={{
         width: '100%',
         display: 'flex',
         gap: '10px',
