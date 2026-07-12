@@ -179,8 +179,8 @@ export default function LandingScene({ onLaunch }) {
           onPointerOver={() => (document.body.style.cursor = 'pointer')}
           onPointerOut={() => (document.body.style.cursor = 'auto')}
         >
-          <cylinderGeometry args={[0.35, 0.35, 0.12, 24]} />
-          <meshStandardMaterial color="#cc2200" emissive="#cc2200" emissiveIntensity={0.6} metalness={0.4} roughness={0.3} />
+          {/* <cylinderGeometry args={[0.35, 0.35, 0.12, 24]} /> */}
+          {/* <meshStandardMaterial color="#cc2200" emissive="#cc2200" emissiveIntensity={0.6} metalness={0.4} roughness={0.3} /> */}
         </mesh>
       )}
     </group>
