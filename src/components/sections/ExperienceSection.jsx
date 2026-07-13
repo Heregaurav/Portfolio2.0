@@ -51,7 +51,8 @@ function Timeline({ items, icon: Icon, dotClass, containerRef, itemRefs }) {
           ref={itemRefs[i]}
           data-reveal
           className="exp-row"
-          style={{ display: 'flex', gap: '22px', marginBottom: i === items.length - 1 ? 0 : '32px' }}
+          style={{ display: 'flex', gap: '22px', marginBottom: i === items.length - 1 ? 0 : '32px',    backdropFilter: 'blur(10px)',
+           WebkitBackdropFilter: 'blur(9px)', }}
         >
           <div
             className={dotClass}
@@ -164,9 +165,10 @@ export default function ExperienceSection() {
           <Timeline
             items={EDUCATION}
             icon={GraduationCap}
-            dotClass="edu-dot"
+            dotClass="exp-dot"
             containerRef={eduContainerRef}
             itemRefs={eduItemRefs}
+            
           />
         </div>
 

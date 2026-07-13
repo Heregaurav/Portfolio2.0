@@ -10,13 +10,11 @@ const ITEMS = [
     subtitle: "Building teams that build things",
     frontColor: "#8B5CF6",
     details: [
-      "Led the college Dance club ,learnt alot ",
-      "Led multiple college project ,",
-      "Collaborated across design, frontend & backend.",
-      "Focused on ownership, communication & execution.",
-    ],
+         "Led the college Dance Club, learned the importance of teamwork and collaboration.",
+         "Organized college events and Led the academic course projects.",
+         "Believed that leadership is measured by the success of the team, not the individual.",
+        ],
     skills: [
-      "Leadership",
       "Team Management",
       "Communication",
       "Project Planning",
@@ -26,21 +24,19 @@ const ITEMS = [
 
   {
     icon: Music,
-    title: "Dance Club Lead",
+    title: "Dance Club",
     subtitle: "Performance meets discipline",
     frontColor: "#EC4899",
     details: [
-      "Lead of Dynamight Dance Club.",
-      "Mentored juniors and coordinated practices.",
-      "Managed choreography for college performances.",
-      "Won Inter-College Dance Competition.",
-      "Organized events & rehearsals.",
+      "Served as Co-Lead of the Dynamight Dance Club.",
+      "Worked closely with the team to win the Inter-College Dance Competition.",
+      "Mentored junior members and coordinated practice sessions.",
+      "Assisted in organizing rehearsals and club events.",
     ],
     skills: [
       "Mentorship",
       "Creativity",
       "Coordination",
-      "Public Performance",
       "Team Spirit",
     ],
   },
@@ -51,10 +47,10 @@ const ITEMS = [
     subtitle: "Compete. Improve. Repeat.",
     frontColor: "#F59E0B",
     details: [
+      "vollyball - Libero , DS",
+      "Junior State  level vollyball player  , Represented school team at state level , Won silver",
       "Member of IIIT Dharwad Volleyball Team.",
-      "Strong believer in consistency over intensity.",
-      "Learned discipline through competitive sports.",
-      "Applied sports mindset to DSA preparation.",
+      "Learned the value of discipline.",
       "Continuous self-improvement mentality.",
     ],
     skills: [
@@ -92,7 +88,7 @@ export default function ExtracurricularsSection() {
           }
 
           .flip-card{
-              height:360px;
+              height:400px;
               perspective:1200px;
           }
 
@@ -104,10 +100,20 @@ export default function ExtracurricularsSection() {
               transform-style:preserve-3d;
           }
 
-          .flip-card:hover .flip-inner{
-              transform:rotateY(180deg);
+          /* Desktop / Laptop */
+          @media (hover: hover) and (pointer: fine) {
+            .flip-card:hover .flip-inner {
+              transform: rotateY(180deg);
+            }
           }
 
+          /* Touch devices */
+          @media (hover: none) {
+            .flip-card {
+              cursor: pointer;
+              touch-action: manipulation;
+            }
+          }
           .flip-card.is-flipped .flip-inner{
               transform:rotateY(180deg);
           }
@@ -226,17 +232,9 @@ export default function ExtracurricularsSection() {
           }
 
           @media(max-width:768px){
-
               .flip-card{
                   height:400px;
-                  cursor:pointer;
-                  touch-action:manipulation;
               }
-
-              .flip-card:hover .flip-inner{
-                  transform:none;
-              }
-
           }
         `}</style>
 
