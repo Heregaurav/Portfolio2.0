@@ -161,11 +161,11 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
           .landing-cta-button { padding: 12px 18px !important; font-size: 12px !important; max-width: 300px !important; }
         }
         @media (max-width: 640px) {
-          .landing-content-panel { margin-left: 8px !important; max-width: calc(100vw - 16px) !important; width: auto !important; }
+          .landing-content-panel { margin-left: 8px !important;   max-width: calc(100vw - 16px) !important; width: auto !important; fontSize: 5px !important; }
           .landing-cta-button { width: auto !important; min-width: 180px !important; max-width: 240px !important; }
           .landing-main-title { font-size: clamp(24px, 10vw, 34px) !important; }
-          .landing-title-outline { font-size: clamp(28px, 10vw, 38px) !important; }
-          .landing-stat-wrap { margin-bottom: 12px !important; justify-content: flex-start !important; gap: 5px !important; }
+          .landing-title-outline { font-size: clamp(20px, 9vw, 30px) !important; }
+          .landing-stat-wrap { margin-bottom: 6px !important; justify-content: flex-start !important; gap: 4px !important; }
           .landing-stat-card { min-width: 48px !important; padding: 6px 8px !important; flex: 0 0 auto !important; }
           .landing-stat-value { font-size: 13px !important; }
           .landing-stat-label { font-size: 6px !important; }
@@ -207,10 +207,10 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
 
         {/* Subtitle Mission Badge */}
       <div style={{
-          fontFamily: 'var(--font-mono, monospace)',
+          fontFamily: 'var(--font-display, sans-serif)',
           fontSize: '14px',
           color: ' #ffffff',
-          letterSpacing: '2px',
+          letterSpacing: '1px',
           marginTop:'10px',
           marginBottom: '35px',
           opacity: 0.85,
@@ -222,8 +222,8 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
            "Stay Hungry ,  Stay Foolish"
         <div
           style={{
-            fontFamily: "var(--font-mono)",
-            letterSpacing: "5px",
+            fontFamily:'var(--font-display, sans-serif)' ,
+            letterSpacing: "-1.5px",
             fontSize: "11px",
             color: "rgba(238, 243, 245, 0.55)",
           }}
@@ -238,7 +238,7 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
             fontSize: 'clamp(32px, 5.5vw, 40px)',
             fontWeight: 900,
             lineHeight: 0.95,
-            letterSpacing: '-1.5px',
+            letterSpacing: '-2px',
             marginBottom: '4px',
             color: '#ffffff',
             textShadow: '0 6px 22px rgba(0,0,0,0.55)',
@@ -249,9 +249,9 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
           <h2 className="landing-title-outline" style={{
             fontFamily: 'var(--font-display, sans-serif)',
             fontSize: 'clamp(30px, 5vw, 36px)',
-            fontWeight: 900,
+            fontWeight: 600,
             lineHeight: 0.95,
-            letterSpacing: '-1.5px',
+            letterSpacing: '-0.5px',
             marginBottom: '24px',
             WebkitTextStroke: '1.5px rgba(250, 250, 250, 0.8)',
             color: 'transparent',
