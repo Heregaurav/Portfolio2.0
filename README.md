@@ -24,8 +24,7 @@ The portfolio uses a space-themed environment built with 3D models and GLB asset
 **3D**
 - Three.js
 - React Three Fiber
-- Drei
-- GLB / GLTF Models
+- GLB Models
 
 **Animation**
 - GSAP
