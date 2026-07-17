@@ -89,104 +89,38 @@ export default function Planet({ type, orbitRadius, orbitAngle, orbitY, orbitSpe
   const loadedScene = useMemo(() => {
     if (!gltf?.scene) return null;
 
-    try {
-      const sceneClone = gltf.scene.clone();
-      sceneClone.updateMatrixWorld(true);
+    const sceneClone = gltf.scene.clone();
+    sceneClone.updateMatrixWorld(true);
 
-      // Build the bounding box from individual mesh boxes rather than
-      // Box3.setFromObject on the whole hierarchy. Sketchfab-style exports
-      // often carry small leftover geometry (a rig marker, a reference prop)
-      // positioned far outside the actual model — this is confirmed to be
-      // exactly what's happening in the Jupiter/devops GLB, where two small
-      // meshes sit ~50,000 units away from the rest of the model, which only
-      // spans a few hundred units. A stray mesh like that blows up a naive
-      // bounding box, which collapses normalizedScale toward zero below and
-      // shrinks the real planet down to an invisible speck.
-      const meshEntries = [];
-      sceneClone.traverse((child) => {
-        if (child.isMesh && child.geometry) {
-          child.geometry.computeBoundingBox();
-          if (child.geometry.boundingBox) {
-            const worldBox = child.geometry.boundingBox.clone().applyMatrix4(child.matrixWorld);
-            const s = new Vector3();
-            worldBox.getSize(s);
-            meshEntries.push({ box: worldBox, volume: Math.max(s.x * s.y * s.z, 1e-6) });
-          }
-        }
-      });
+    const box = new Box3().setFromObject(sceneClone);
+    const center = new Vector3();
+    box.getCenter(center);
+    sceneClone.position.sub(center);
 
-      // Anchor on the largest mesh (by bounding-box volume — reliably part
-      // of the real model) and exclude any mesh whose center is many
-      // multiples of that mesh's own size away from it. Legitimate parts of
-      // a model stay within a few thousand units of each other; a mesh
-      // that's tens of thousands of units off is not part of the visible
-      // planet.
-      let anchor = null;
-      for (const m of meshEntries) {
-        if (!anchor || m.volume > anchor.volume) anchor = m;
+    const size = new Vector3();
+    box.getSize(size);
+    const maxDim = Math.max(size.x, size.y, size.z, 1);
+    const normalizedScale = UNIFORM_PLANET_SIZE / maxDim;
+    sceneClone.scale.setScalar(normalizedScale * (cfg.modelScale || 1));
+    sceneClone.updateMatrixWorld(true);
+
+    sceneClone.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+        // This is the actual fix for the hover freeze: without this, the
+        // raycaster tests every triangle of the imported model on every
+        // pointer move. The invisible proxy sphere below is what should be
+        // handling hit-testing instead — it's cheap and roughly matches the
+        // model's silhouette. Planets with heavier geometry (e.g. Mars
+        // terrain, Saturn's rings) were hitching worse simply because the
+        // raycaster had more triangles to test against.
+        child.raycast = () => null;
       }
+    });
 
-      let filtered = meshEntries;
-      if (anchor) {
-        const anchorCenter = new Vector3();
-        anchor.box.getCenter(anchorCenter);
-        const anchorDiag = Math.max(anchor.box.min.distanceTo(anchor.box.max), 1);
-
-        filtered = meshEntries.filter((m) => {
-          const c = new Vector3();
-          m.box.getCenter(c);
-          return c.distanceTo(anchorCenter) <= anchorDiag * 8;
-        });
-      }
-
-      const box = meshEntries.length > 0
-        ? new Box3()
-        : new Box3().setFromObject(sceneClone);
-      if (meshEntries.length > 0) {
-        (filtered.length ? filtered : meshEntries).forEach((m) => box.union(m.box));
-      }
-
-      const center = new Vector3();
-      box.getCenter(center);
-      sceneClone.position.sub(center);
-
-      const size = new Vector3();
-      box.getSize(size);
-      const maxDim = Math.max(size.x, size.y, size.z, 1);
-      let normalizedScale = UNIFORM_PLANET_SIZE / maxDim;
-
-      // Last-resort safety net: if the box was still somehow degenerate
-      // (NaN/Infinity/zero), fall back to the procedural glow sphere for
-      // this planet instead of rendering an invisible or absurdly huge one.
-      if (!isFinite(normalizedScale) || normalizedScale <= 0) {
-        console.warn(`[Planet:${type}] invalid bounding box (maxDim=${maxDim}) — using procedural fallback instead of the GLB.`);
-        return null;
-      }
-
-      sceneClone.scale.setScalar(normalizedScale * (cfg.modelScale || 1));
-      sceneClone.updateMatrixWorld(true);
-
-      sceneClone.traverse((child) => {
-        if (child.isMesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-          // This is the actual fix for the hover freeze: without this, the
-          // raycaster tests every triangle of the imported model on every
-          // pointer move. The invisible proxy sphere below is what should be
-          // handling hit-testing instead — it's cheap and roughly matches the
-          // model's silhouette. Planets with heavier geometry (e.g. Mars
-          // terrain, Saturn's rings) were hitching worse simply because the
-          // raycaster had more triangles to test against.
-          child.raycast = () => null;
-        }
-      });
-
-      return sceneClone;
-    } catch (err) {
-      console.warn(`[Planet:${type}] failed to process GLB, using procedural fallback:`, err);
-      return null;
-    }
-  }, [gltf, cfg.modelScale, type]);
+    return sceneClone;
+  }, [gltf, cfg.modelScale]);
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
