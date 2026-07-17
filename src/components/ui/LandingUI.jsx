@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { Rocket, FileText, Radio, ChevronDown } from 'lucide-react';
 
 const ROLES = [
+  'Relentless',
   'Software Developer',
   'Cybersecurity Learner',
   'DevOps',
@@ -206,12 +207,42 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
         {/* localized vignette behind the content to improve text readability without heavy boxes */}
 
         {/* Subtitle Mission Badge */}
-      <div style={{
+      
+        {/* Cinematic Header Text Block */}
+        <div ref={titleRef} className="landing-title-block" style={{ opacity: 0 }}>
+          <h1 className="landing-main-title" style={{
+            fontFamily: 'var(--font-display, sans-serif)',
+            fontSize: 'clamp(32px, 5.5vw, 40px)',
+            fontWeight: 900,
+            lineHeight: 0.95,
+            letterSpacing: '-2px',
+            marginTop:'28px',
+            marginBottom: '4px',
+            color: '#ffffff',
+            textShadow: '0 6px 22px rgba(0,0,0,0.55)',
+            textAlign: 'left',
+          }}>
+            GAURAV KUMAR
+          </h1>
+          <h2 className="landing-title-outline" style={{
+            fontFamily: 'var(--font-display, sans-serif)',
+            fontSize: 'clamp(30px, 5vw, 36px)',
+            fontWeight: 600,
+            lineHeight: 0.55,
+            letterSpacing: '-0.5px',
+            marginBottom: '24px',
+            color: '#ffffff',
+            textShadow: '0 8px 30px rgba(0,0,0,0.55)',
+            textAlign: 'left',
+          }}>
+            CHANDRAVANSHI
+          </h2>
+        </div>
+          <div style={{
           fontFamily: 'var(--font-display, sans-serif)',
           fontSize: '14px',
           color: ' #ffffff',
           letterSpacing: '1px',
-          marginTop:'10px',
           marginBottom: '35px',
           opacity: 0.85,
           display: 'flex',
@@ -231,49 +262,19 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
           — STEVE JOBS
         </div>
       </div>
-        {/* Cinematic Header Text Block */}
-        <div ref={titleRef} className="landing-title-block" style={{ opacity: 0 }}>
-          <h1 className="landing-main-title" style={{
-            fontFamily: 'var(--font-display, sans-serif)',
-            fontSize: 'clamp(32px, 5.5vw, 40px)',
-            fontWeight: 900,
-            lineHeight: 0.95,
-            letterSpacing: '-2px',
-            marginBottom: '4px',
-            color: '#ffffff',
-            textShadow: '0 6px 22px rgba(0,0,0,0.55)',
-            textAlign: 'left',
-          }}>
-            GAURAV KUMAR
-          </h1>
-          <h2 className="landing-title-outline" style={{
-            fontFamily: 'var(--font-display, sans-serif)',
-            fontSize: 'clamp(30px, 5vw, 36px)',
-            fontWeight: 600,
-            lineHeight: 0.95,
-            letterSpacing: '-0.5px',
-            marginBottom: '24px',
-            WebkitTextStroke: '1.5px rgba(250, 250, 250, 0.8)',
-            color: 'transparent',
-            textShadow: '0 8px 30px rgba(0,0,0,0.55)',
-            textAlign: 'left',
-          }}>
-            CHANDRAVANSHI
-          </h2>
-        </div>
-
         {/* Typed Dynamic Status String Indicator */}
         <div ref={subtitleRef} style={{
           fontSize: '15px',
           fontFamily: "'Space Grotesk', sans-serif",
           marginBottom: '36px',
           opacity: 1,
+          letterSpacing:'6px',
         }}>
           <TypedText texts={ROLES} />
         </div>
 
         {/* Core Operational Statistics Matrix */}
-        <div ref={statsRef} className="landing-stat-wrap" style={{
+        {/* <div ref={statsRef} className="landing-stat-wrap" style={{
           display: 'flex',
           gap: '10px',
           marginBottom: '44px',
@@ -309,7 +310,7 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
               }}>{s.label}</div>
             </div>
           ))}
-        </div>
+        </div> */}
 
         {/* Action Controls Matrix (LAUNCH moved to top-right to avoid overlap) */}
         <div ref={buttonsRef} className="landing-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -343,79 +344,9 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
               e.currentTarget.style.boxShadow = '0 18px 40px rgba(0,0,0,0.28), 0 0 18px rgba(0,212,255,0.1)';
             }}
           >
-            <Rocket size={16} strokeWidth={2} /> BETA
+            <Rocket size={25} strokeWidth={0.7} /> BETA
           </button>
 
-          <div className="secondary-action-row" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <button
-              onClick={onResume}
-              style={{
-                fontFamily: 'var(--font-mono, monospace)',
-                fontSize: '11px',
-                letterSpacing: '2px',
-                padding: '12px 24px',
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: '10px',
-                color: 'rgba(255,255,255,0.78)',
-                cursor: 'pointer',
-                opacity: 0,
-                transition: 'all 0.25s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                flex: '1 1 160px',
-                minWidth: '152px',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.45)';
-                e.currentTarget.style.color = '#ffffff';
-                e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
-                e.currentTarget.style.color = 'rgba(255,255,255,0.78)';
-                e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-              }}
-            >
-              <FileText size={13} strokeWidth={2} /> RESUME
-            </button>
-            <button
-              onClick={onContact}
-              style={{
-                fontFamily: 'var(--font-mono, monospace)',
-                fontSize: '11px',
-                letterSpacing: '2px',
-                padding: '12px 24px',
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: '10px',
-                color: 'rgba(255,255,255,0.78)',
-                cursor: 'pointer',
-                opacity: 0,
-                transition: 'all 0.25s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                flex: '1 1 140px',
-                minWidth: '140px',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = 'rgba(180,79,255,0.6)';
-                e.currentTarget.style.color = 'var(--neon-purple, #b44fff)';
-                e.currentTarget.style.background = 'rgba(180,79,255,0.08)';
-                e.currentTarget.style.boxShadow = '0 0 15px rgba(180,79,255,0.2)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
-                e.currentTarget.style.color = 'rgba(255,255,255,0.78)';
-                e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              <Radio size={13} strokeWidth={2} /> CONTACT
-            </button>
-          </div>
         </div>
 
         {/* Links */}
@@ -456,7 +387,7 @@ export default function LandingUI({ onLaunch, onResume, onContact }) {
       >
         <span style={{
           fontFamily: 'var(--font-mono, monospace)',
-          fontSize: '9px',
+          fontSize: '12px',
           letterSpacing: '3px',
           color: 'rgba(255,255,255,0.4)',
         }}>
